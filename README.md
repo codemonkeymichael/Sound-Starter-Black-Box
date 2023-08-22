@@ -1,2 +1,2 @@
 # Sound-Starter-Black-Box
-Sends Key Strokes to Multi-Play 
+CircuitPython code to send key strokes to Multi-Play theater sound player using Pi Pico.
