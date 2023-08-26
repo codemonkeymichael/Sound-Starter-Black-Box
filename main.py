@@ -49,7 +49,7 @@ while True:
         goLed.duty_cycle = ledBright
         sleep(0.5)
         for duty in range(ledBright, ledDim, -3):
-            goLed.duty_cycle = duty
+            goLed.duty_cycle = dutyc
             sleep(0.001)
     if stopBtn.value:
         kbd.send(Keycode.ESCAPE,) 
@@ -62,20 +62,27 @@ while True:
     if remote1Btn.value == 1 and gunIsCocked == False:
         print("Gun Cocked")
         gunIsCocked = True
-        sleep(0.25)abcdef
+        kbd.send(remotePushSequence[remotePushSequencePosition],)
+        remotePushSequencePosition += 1
+        if (remotePushSequencePosition + 1) > len(remotePushSequence):
+            remotePushSequencePosition = 0
+        remoteLed.duty_cycle = ledBright
+        for duty in range(ledBright, 0, -20):
+            remoteLed.duty_cycle = duty
+            sleep(0.001)    
         continue
     if remote1Btn.value == 0 and gunIsCocked == True:
-        gunIsCocked = True
+        gunIsCocked = False
         kbd.send(remotePushSequence[remotePushSequencePosition],)        
-        print("Remote Button 1 Push " + str(remotePushSequencePosition))
+        print("Remote Button D Push " + str(remotePushSequence[remotePushSequencePosition]))
         remotePushSequencePosition += 1
         if (remotePushSequencePosition + 1) > len(remotePushSequence):
             remotePushSequencePosition = 0    
-        remoteLed.duty_cycle = ledBright
-        sleep(0.5)
-        for duty in range(ledBright, 0, -4):
+        remoteLed.duty_cycle = ledBright       
+        for duty in range(ledBright, 0, -20):
             remoteLed.duty_cycle = duty
             sleep(0.001)
+        sleep(2.0)
     if remote2Btn.value:
         print("Remote Button 2 Push ")
             
