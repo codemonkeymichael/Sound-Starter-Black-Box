@@ -73,20 +73,20 @@ while True:
     else:
               
         if goBtn.value == 1:
-            kbd.send(Keycode.SPACE,)
+            kbd.send(Keycode.SPACE,)   
             print("Go Button Push - SPACE")
             goLed.duty_cycle = ledBright
             #button delay
-            sleep(1.0)
-            for duty in range(ledBright, ledDim, -3):
+            sleep(0.5)
+            for duty in range(ledBright, ledDim, -4):
                 goLed.duty_cycle = duty                
-        if stopBtn.value == 1:
+        if stopBtn.value == 1:    
             kbd.send(Keycode.ESCAPE,) 
             print("Stop Button Push - ESC")
             stopLed.duty_cycle = ledBright
             #button delay
-            sleep(1.0)
-            for duty in range(ledBright, ledDim, -3):
+            sleep(0.5)
+            for duty in range(ledBright, ledDim, -4):
                 stopLed.duty_cycle = duty
                    
               
