@@ -8,11 +8,11 @@ from adafruit_hid.keycode import Keycode
 
 kbd = Keyboard(usb_hid.devices)
 
-remotePushSequence = [Keycode.A, Keycode.B, Keycode.C, Keycode.D, Keycode.E, Keycode.F, Keycode.G, Keycode.H, Keycode.I, Keycode.J]
+remotePushSequence = [Keycode.A, Keycode.B, Keycode.C, Keycode.D, Keycode.E, Keycode.F, Keycode.G, Keycode.H, Keycode.I, Keycode.J, Keycode.K, Keycode.L, Keycode.M]
 remotePushSequencePosition = 0
 
-ledDim = 2000  
-ledBright = 10000
+ledDim = 5000   
+ledBright = 30000 
 
 remote1Btn = digitalio.DigitalInOut(board.GP0)
 remote1Btn.direction = digitalio.Direction.INPUT 
@@ -88,10 +88,9 @@ while True:
             sleep(1.0)
             for duty in range(ledBright, ledDim, -3):
                 stopLed.duty_cycle = duty
-                sleep(0.001) 
+                   
               
-        if remote1Btn.value == 1 and gunIsCocked == False:
-            print("Gun Cocked")
+        if remote1Btn.value == 1 and gunIsCocked == False:        
             gunIsCocked = True
             kbd.send(remotePushSequence[remotePushSequencePosition],)
             remotePushSequencePosition += 1
@@ -117,7 +116,8 @@ while True:
                     sleep(0.001)
                 sleep(2.0)
         #if remote2Btn.value:
-            #print("Remote Button 2 Push ")
+            #print("Skip a cue")
+           
                 
                 
                         
@@ -131,4 +131,5 @@ while True:
             
 
     
+
 
