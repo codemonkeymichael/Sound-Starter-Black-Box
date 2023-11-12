@@ -17,19 +17,22 @@ ledBright = 30000
 remote1Btn = digitalio.DigitalInOut(board.GP0)
 remote1Btn.direction = digitalio.Direction.INPUT 
 remote1Btn.pull = digitalio.Pull.DOWN
+remote1BtnIsDown = False
 
-#not wired
-#remote2Btn = digitalio.DigitalInOut(board.GP1)
-#remote2Btn.direction = digitalio.Direction.INPUT
-#remote2Btn.pull = digitalio.Pull.DOWN
+remote2Btn = digitalio.DigitalInOut(board.GP1)
+remote2Btn.direction = digitalio.Direction.INPUT
+remote2Btn.pull = digitalio.Pull.DOWN
+remote2BtnIsDown = False
 
 goBtn = digitalio.DigitalInOut(board.GP2)
 goBtn.direction = digitalio.Direction.INPUT
 goBtn.pull = digitalio.Pull.DOWN
+goBtnIsDown = False
 
 stopBtn = digitalio.DigitalInOut(board.GP3)
 stopBtn.direction = digitalio.Direction.INPUT
 stopBtn.pull = digitalio.Pull.DOWN
+stopBtnIsDown = False
 
 goLed = pwmio.PWMOut(board.GP4, frequency=ledBright)
 goLed.duty_cycle = ledDim
@@ -40,7 +43,6 @@ stopLed.duty_cycle = ledDim
 remoteLed = pwmio.PWMOut(board.GP6, frequency=ledBright)
 remoteLed.duty_cycle = 0
 
-gunIsCocked = False
 showIsRunning = False
 flashStatus = False
 
@@ -58,66 +60,84 @@ while True:
         if goBtn.value == 1:
             print("Start the Show")
             showIsRunning = True
-            for duty in range(ledBright, ledDim, -10):
+            for duty in range(ledBright, ledDim, -1):
                 goLed.duty_cycle = duty
-                stopLed.duty_cycle = duty
-                sleep(0.001)
+                stopLed.duty_cycle = duty                
             goLed.duty_cycle = ledBright
             stopLed.duty_cycle = ledBright  
-            sleep(2.5)
+            sleep(0.25)
             goLed.duty_cycle = ledDim
             stopLed.duty_cycle = ledDim
         #flash delay
         sleep(0.1)
             
     else:
-              
-        if goBtn.value == 1:
-            kbd.send(Keycode.SPACE,)   
-            print("Go Button Push - SPACE")
+      
+        if goBtn.value == 1 and not goBtnIsDown:
+            print("Go Button Push - SPACE")      
+            goBtnIsDown = True          
+            kbd.send(Keycode.SPACE,)
             goLed.duty_cycle = ledBright
-            #button delay
-            sleep(0.5)
-            for duty in range(ledBright, ledDim, -4):
-                goLed.duty_cycle = duty                
-        if stopBtn.value == 1:    
-            kbd.send(Keycode.ESCAPE,) 
+            #button bounce delay
+            sleep(0.25)
+            for duty in range(ledBright, ledDim, -2):
+                goLed.duty_cycle = duty
+        if goBtn.value == 0 and goBtnIsDown:
+            print("Go Button Is Up")          
+            goBtnIsDown = False
+            #button bounce delay
+            sleep(0.25)
+            
+        if stopBtn.value == 1 and not stopBtnIsDown:
             print("Stop Button Push - ESC")
+            stopBtnIsDown = True
+            kbd.send(Keycode.ESCAPE,)             
             stopLed.duty_cycle = ledBright
             #button delay
-            sleep(0.5)
-            for duty in range(ledBright, ledDim, -4):
+            sleep(0.25)
+            for duty in range(ledBright, ledDim, -2):
                 stopLed.duty_cycle = duty
-                   
+        if stopBtn.value == 0 and stopBtnIsDown:
+            print("Stop Button Is Up")
+            stopBtnIsDown = False
+            #button bounce delay
+            sleep(0.25)
               
-        if remote1Btn.value == 1 and gunIsCocked == False:        
-            gunIsCocked = True
+        if remote1Btn.value == 1 and not remote1BtnIsDown:
+            print("Remote Button 1 Is Down")            
+            print(remotePushSequence[remotePushSequencePosition])
+            remote1BtnIsDown = True
             kbd.send(remotePushSequence[remotePushSequencePosition],)
             remotePushSequencePosition += 1
             if (remotePushSequencePosition + 1) > len(remotePushSequence):
                 remotePushSequencePosition = 0
                 showIsRunning = False
             remoteLed.duty_cycle = ledBright
-            for duty in range(ledBright, 0, -20):
+            #button bounce delay
+            sleep(0.25)
+            for duty in range(ledBright, 0, -2):
                 remoteLed.duty_cycle = duty
-                sleep(0.001)
-                           
-        if remote1Btn.value == 0 and gunIsCocked == True:
-                gunIsCocked = False
-                kbd.send(remotePushSequence[remotePushSequencePosition],)        
-                print("Remote Button D Push " + str(remotePushSequence[remotePushSequencePosition]))
-                remotePushSequencePosition += 1
-                if (remotePushSequencePosition + 1) > len(remotePushSequence):
-                    remotePushSequencePosition = 0
-                    showIsRunning = False
-                remoteLed.duty_cycle = ledBright       
-                for duty in range(ledBright, 0, -20):
-                    remoteLed.duty_cycle = duty
-                    sleep(0.001)
-                sleep(2.0)
-        #if remote2Btn.value:
-            #print("Skip a cue")
-           
+        if remote1Btn.value == 0 and remote1BtnIsDown:
+            print("Remote Button 1 Is Up")
+            remote1BtnIsDown = False
+            #button bounce delay
+            sleep(0.25)
+       
+        if remote2Btn.value == 1 and not remote2BtnIsDown:
+            print("Remote Button 2 Is Down")  
+            remote2BtnIsDown = True
+            remotePushSequencePosition += 1
+            #button bounce delay
+            sleep(0.25)
+        if remote2Btn.value == 0 and remote2BtnIsDown:
+            print("Remote Button 2 Is Up")
+            remote2BtnIsDown = False
+            #button bounce delay
+            sleep(0.25)
+             
+            
+            
+            
                 
                 
                         
@@ -131,5 +151,4 @@ while True:
             
 
     
-
 
